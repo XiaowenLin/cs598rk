@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>D3jango project</title>
+    </head>
+    <body>
+        <div>
+            <h1><a href="">List of searched products</a></h1>
+        </div>
+
+        {% for product in products %}
+        <div>
+
+            <h2><a href={{ product.product_name }}>{{ product.product_name }}</a></h2>
+            <p>created: {{ product.created_date }}</p>
+            <p>ASIN: {{ product.ASIN }}</p>
+        </div>
+
+        {% endfor %}
+    </body>
+</html>
