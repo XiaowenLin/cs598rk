@@ -14,12 +14,12 @@ def product_list(request):
 def viz(request, product):
 	#reader = csv.reader("data/cellphone.csv")
 	
-	with open('product/data/cellphone.json') as data_file:    
-	    data = json.load(data_file)
-	    data = json.dumps(data)
+	# with open('product/data/cellphone.json') as data_file:    
+	#     data = json.load(data_file)
+	#     data = json.dumps(data)
 
-	data = data.replace("&quot;", "\"")
-	posList = data["pos"]
+	# data = data.replace("&quot;", "\"")
+	# posList = data["pos"]
 	
 	return render(request, 'product/visualization.html', {
             'product': product,
