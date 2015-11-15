@@ -1,5 +1,4 @@
 import json
-import re
 
 # filename
 base_dir = os.path.join('data') 
