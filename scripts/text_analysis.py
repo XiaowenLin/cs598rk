@@ -1,19 +1,7 @@
 #!/usr/bin/python
 
-# coding: utf-8
-
 import re
 DATAFILE_PATTERN = '^(.+),"(.+)",(.*),(.*),(.*)'
-
-def get_rdd(base, input, num_part):
-    base_dir = os.path.join(base)
-    input_path = os.path.join(input)
-    file_name = os.path.join(base_dir, input_path)
-    # load data
-    rdd = sc.textFile(file_name, num_part)
-    rdd_j = rdd.map(json.loads)
-    rdd_j.cache()
-    return rdd_j
 
 def removeQuotes(s):
     """ Remove quotation marks from an input string
@@ -44,9 +32,10 @@ def parseDatafileLine(datafileLine):
         return ((removeQuotes(match.group(1)), product), 1)
 
 
+
+
 import sys
 import os
-from test_helper import Test
 
 def parseData(filename):
     """ Parse a data file
@@ -86,7 +75,8 @@ def loadData(path):
     assert raw.count() == (valid.count() + 1)
     return valid
 
-split_regex = r"W+"
+
+split_regex = r'\W+'
 def simpleTokenize(string):
     """ A simple implementation of input string tokenization
     Args:
@@ -96,12 +86,7 @@ def simpleTokenize(string):
     """
     return filter(lambda x: x != '', re.split(split_regex, string.strip().lower()))
 
-	
-baseDir = os.getcwd()
-inputPath = 'data'
-STOPWORDS_PATH = 'stopwords'
-stopfile = os.path.join(baseDir, inputPath, STOPWORDS_PATH)
-stopwords = set(sc.textFile(stopfile).collect())
+
 def tokenize(string):
     """ An implementation of input string tokenization that excludes stopwords
     Args:
@@ -172,5 +157,4 @@ def tfidf(tokens, idfs):
     tfs = tf(tokens)
     tfIdfDict = {key: idfs[key] * tfs[key] for key in tokens}
     return tfIdfDict
-
 

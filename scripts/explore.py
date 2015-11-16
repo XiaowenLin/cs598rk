@@ -4,7 +4,7 @@ def load_reviews(file_name, num_part):
 	# load data
 	reviews = sc.textFile(file_name, num_part)
 	reviews = reviews.map(json.loads)
-	reviews = reviews.cache() # can't do partition here, must have key!
+	reviews = reviews.cache()
 	return reviews
 
 def load_proucts(file_name, num_part):
@@ -18,7 +18,7 @@ def load_proucts(file_name, num_part):
 # TODO: define file_name and num_part here
 reviews = load_reviews(file_name, num_part)
 # find a product
-reviews.filter(lambda x: x[u'asin'] == u'B000TUGSC0').collect() # B000TUGSC0
+reviews.filter(lambda x: x[u'asin'] == u'0006428320').collect()
 
 # numb of reviews of each product
 rating = reviews.map(lambda x: (x[u'asin'], [x[u'overall']]))
@@ -57,20 +57,12 @@ categ_n = categ.reduceByKey(lambda x, y: x + y)
 catg_num = categ_n.count() # 1114
 
 # (catg, 1)
-categ_n_dc = categ_n.collectAsMap()
-ct_num_j = json.dumps(categ_n_dc)
-with open('data/ct_num.json', 'w') as outfile:
-    json.dump(ct_num_j, outfile)
+categ_n
 
 # (catg, ave price)
 categ_p = asin.map( lambda (asin, price, catg): ([item for sublist in catg for item in sublist], price) ).flatMap( lambda (catg, price): [(ct, (price, 1)) for ct in catg] ).filter(lambda (ct, (price, i)): price != None)
 categ_totalp = categ_p.reduceByKey( lambda x, y: (x[0] + y[0], x[1] + y[1]) )
 categ_avep = categ_totalp.map(lambda (ct, (p, c)): (ct, p/c))
-ct_avep_dc = categ_avep.collectAsMap()
-ct_avep_j = json.dumps(ct_avep_dc)
-with open('data/ct_avep.json', 'w') as outfile:
-    json.dump(ct_avep_j, outfile)
-
 
 # require join! (review length, catg)
 # (asin, catg) + (asin, review length)
@@ -78,18 +70,12 @@ asin_catg = asin.map( lambda (asin, price, catg): (asin, [item for sublist in ca
 asin_revlen = reviews.map( lambda x: (x.get('asin'), len(x.get('reviewText'))))
 asin_ct_revl = asin_catg.join(asin_revlen)
 ct_revlen = asin_ct_revl.map(lambda (asi, (ct, cnt)): (ct, (cnt, 1))).reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])).map(lambda (ct, (revl, n)): (ct, revl/n))
-ct_revlen_dc = ct_revlen.collectAsMap()
-ct_revlen_j = json.dumps(ct_revlen_dc)
-with open('data/ct_revlen.json', 'w') as outfile:
-    json.dump(ct_revlen_j, outfile)
+ct_revlen.top(10)
 
 # require join! (ave rating, catg)
 # (asin catg) + (asin, ave rating)
-asin_averat = ave_rating.map(lambda (asi, (tot, cnt)): (asi, tot/cnt))
+asin_averat = ave_rating.map(lambda (asi, tot, cnt): (asi, tot/cnt))
 ct_averat = asin_catg.join(asin_averat).map(lambda (asi, (ct, rate)): (ct, (rate, 1))).reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])).map(lambda (ct, (tot_r, n)): (ct, tot_r/n))
-ct_averat_dc = ct_averat.collectAsMap()
-ct_averat_j = json.dumps(ct_averat_dc)
-with open('data/ct_averat.json', 'w') as outfile:
-    json.dump(ct_averat_j, outfile)
+ct_averat.top(10)
 
 
