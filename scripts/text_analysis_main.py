@@ -3,6 +3,7 @@ import re
 import sys
 import os
 import json
+import pandas as pd
 
 
 def get_rdd(base, input, num_part):
@@ -15,92 +16,61 @@ def get_rdd(base, input, num_part):
         rdd_j.cache()
         return rdd_j
 
+		
+def tocsv(data):
+	return ','.join(str(d) for d in data)
+	
 
 revs = get_rdd('data', 'reviews_musical.json', 4)
-import json
 revs = get_rdd('data', 'reviews_musical.json', 4)
-revs.take(2)
-rev_texts = revs.map(lambda x: x['reviewText'])
-
-quickbrownfox = 'A quick brown fox jumps over the lazy dog.'
-
-
-split_regex = r'W+'
-print simpleTokenize(quickbrownfox, split_regex) # Should give ['a', 'quick', 'brown', ... ]
-
-
-
-
-
-
+# revs.take(2)
+rev_texts = revs.map(lambda x: (x['asin'], x['reviewText']))
 
 stopfile = os.path.join(baseDir, inputPath, STOPWORDS_PATH)
 stopwords = set(sc.textFile(stopfile).collect())
-print 'These are the stopwords: %s' % stopwords
+# print 'These are the stopwords: %s' % stopwords
 
-print tokenize(quickbrownfox) # Should give ['quick', 'brown', ... ]
+# print tokenize(quickbrownfox) # Should give ['quick', 'brown', ... ]
 
+rev_toks = rev_texts.map(lambda (asin, text): (asin, tokenize(text)))
 
+# totalTokens = countTokens(rev_toks)
+# print 'There are %s tokens in the dataset' % totalTokens
 
+# biggestRecord = findBiggestRecord(rev_toks)
+# print 'The  record with ID "%s" has the most tokens (%s)' % (biggestRecord[0][0],
+                                                             # len(biggestRecord[0][1]))
 
+# print tf(tokenize(quickbrownfox)) # Should give { 'quick': 0.1666 ... }
 
-
-
-googleRecToToken = googleSmall.map(lambda (id, string): (id, tokenize(string)))
-
-totalTokens = countTokens(googleRecToToken)
-print 'There are %s tokens in the dataset' % totalTokens
-
-
-
-
-
-biggestRecordGoogle = findBiggestRecord(googleRecToToken)
-print 'The Google record with ID "%s" has the most tokens (%s)' % (biggestRecordGoogle[0][0],
-                                                                   len(biggestRecordGoogle[0][1]))
+idfs_rddpair = idfs(rev_toks)
+idfs_rddpair = idfs_rddpair.sortBy(lambda x: x[1], ascending=True)
+# the file is not so big, use pandas
+df = pd.DataFrame(idfs_rddpair.collect())
+df.to_csv('data/musical.csv')
 
 
+# save to hdfs	
+# idfs_lines = idfs_rddpair.map(tocsv)
+# idfs_lines.saveAsTextFile('data/musical_idfs.csv')
 
-
-
-print tf(tokenize(quickbrownfox)) # Should give { 'quick': 0.1666 ... }
-
-
+# IDFTokens = idfs_rddpair.takeOrdered(20, lambda s: s[1])
+# print IDFTokens
 
 
 
 
+# import matplotlib.pyplot as plt
 
-idfsSmall = idfs(googleRecToToken)
-uniqueTokenCount = idfsSmall.count()
-
-
-
-
-smallIDFTokens = idfsSmall.takeOrdered(11, lambda s: s[1])
-print smallIDFTokens
+# small_idf_values = idfsSmall.map(lambda s: s[1]).collect()
+# fig = plt.figure(figsize=(8,3))
+# plt.hist(small_idf_values, 50, log=True)
+# pass
 
 
 
+# idfsWeights = idfs_rddpair.collectAsMap()
+# tfidsWeights = rev_toks.map(lambda x: tfidf(x[1], idfsWeights
 
-import matplotlib.pyplot as plt
-
-small_idf_values = idfsSmall.map(lambda s: s[1]).collect()
-fig = plt.figure(figsize=(8,3))
-plt.hist(small_idf_values, 50, log=True)
-pass
-
-
-
-
-recb000hkgj8k = googleRecToToken.collect()[0][1]
-idfsSmallWeights = idfsSmall.collectAsMap()
-rec_b000hkgj8k_weights = tfidf(recb000hkgj8k, idfsSmallWeights)
-
-print 'Amazon record "b000hkgj8k" has tokens and weights:n%s' % rec_b000hkgj8k_weights
-
-
-
-
-
-
+# get all tokens
+# toks = rev_toks.flatMap(lambda x: x[1]).distinct()

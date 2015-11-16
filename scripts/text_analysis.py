@@ -2,10 +2,18 @@
 
 # coding: utf-8
 
-
-
 import re
 DATAFILE_PATTERN = '^(.+),"(.+)",(.*),(.*),(.*)'
+
+def get_rdd(base, input, num_part):
+    base_dir = os.path.join(base)
+    input_path = os.path.join(input)
+    file_name = os.path.join(base_dir, input_path)
+    # load data
+    rdd = sc.textFile(file_name, num_part)
+    rdd_j = rdd.map(json.loads)
+    rdd_j.cache()
+    return rdd_j
 
 def removeQuotes(s):
     """ Remove quotation marks from an input string
@@ -36,17 +44,9 @@ def parseDatafileLine(datafileLine):
         return ((removeQuotes(match.group(1)), product), 1)
 
 
-
-
 import sys
 import os
 from test_helper import Test
-
-baseDir = os.path.join('data')
-inputPath = os.path.join('cs100', 'lab3')
-
-GOOGLE_SMALL_PATH = 'Google_small.csv'
-STOPWORDS_PATH = 'stopwords.txt'
 
 def parseData(filename):
     """ Parse a data file
@@ -86,20 +86,7 @@ def loadData(path):
     assert raw.count() == (valid.count() + 1)
     return valid
 
-googleSmall = loadData(GOOGLE_SMALL_PATH)
-
-
-
-
-for line in googleSmall.take(3):
-    print 'google: %s: %sn' % (line[0], line[1])
-
-
-
-
-quickbrownfox = 'A quick brown fox jumps over the lazy dog.'
-split_regex = r'\W+'
-
+split_regex = r"W+"
 def simpleTokenize(string):
     """ A simple implementation of input string tokenization
     Args:
@@ -109,28 +96,12 @@ def simpleTokenize(string):
     """
     return filter(lambda x: x != '', re.split(split_regex, string.strip().lower()))
 
-print simpleTokenize(quickbrownfox) # Should give ['a', 'quick', 'brown', ... ]
-
-
-
-
-# TEST Tokenize a String (1a)
-Test.assertEquals(simpleTokenize(quickbrownfox),
-                  ['a','quick','brown','fox','jumps','over','the','lazy','dog'],
-                  'simpleTokenize should handle sample text')
-Test.assertEquals(simpleTokenize(' '), [], 'simpleTokenize should handle empty string')
-Test.assertEquals(simpleTokenize('!!!!123A/456_B/789C.123A'), ['123a','456_b','789c','123a'],
-                  'simpleTokenize should handle puntuations and lowercase result')
-Test.assertEquals(simpleTokenize('fox fox'), ['fox', 'fox'],
-                  'simpleTokenize should not remove duplicates')
-
-
-
-
+	
+baseDir = os.getcwd()
+inputPath = 'data'
+STOPWORDS_PATH = 'stopwords'
 stopfile = os.path.join(baseDir, inputPath, STOPWORDS_PATH)
 stopwords = set(sc.textFile(stopfile).collect())
-print 'These are the stopwords: %s' % stopwords
-
 def tokenize(string):
     """ An implementation of input string tokenization that excludes stopwords
     Args:
@@ -140,21 +111,6 @@ def tokenize(string):
     """
     return filter(lambda x: not (x in stopwords), simpleTokenize(string))
 
-print tokenize(quickbrownfox) # Should give ['quick', 'brown', ... ]
-
-
-
-
-# TEST Removing stopwords
-Test.assertEquals(tokenize("Why a the?"), [], 'tokenize should remove all stopwords')
-Test.assertEquals(tokenize("Being at the_?"), ['the_'], 'tokenize should handle non-stopwords')
-Test.assertEquals(tokenize(quickbrownfox), ['quick','brown','fox','jumps','lazy','dog'],
-                    'tokenize should handle sample text')
-
-
-
-
-googleRecToToken = googleSmall.map(lambda (id, string): (id, tokenize(string)))
 
 def countTokens(vendorRDD):
     """ Count and return the number of tokens
@@ -165,11 +121,6 @@ def countTokens(vendorRDD):
     """
     return vendorRDD.map(lambda (id, tok): len(tok)).reduce(lambda a, b: a + b)
 
-totalTokens = countTokens(googleRecToToken)
-print 'There are %s tokens in the dataset' % totalTokens
-
-
-
 
 def findBiggestRecord(vendorRDD):
     """ Find and return the record with the largest number of tokens
@@ -179,12 +130,6 @@ def findBiggestRecord(vendorRDD):
         list: a list of 1 Pair Tuple of record ID and tokens
     """
     return [vendorRDD.reduce(lambda a, b: a if len(a[1]) >= len(b[1]) else b), ]
-
-biggestRecordGoogle = findBiggestRecord(googleRecToToken)
-print 'The Google record with ID "%s" has the most tokens (%s)' % (biggestRecordGoogle[0][0],
-                                                                   len(biggestRecordGoogle[0][1]))
-
-
 
 
 def tf(tokens):
@@ -201,22 +146,6 @@ def tf(tokens):
     res
     return res
 
-print tf(tokenize(quickbrownfox)) # Should give { 'quick': 0.1666 ... }
-
-
-
-
-tf_test = tf(tokenize(quickbrownfox))
-Test.assertEquals(tf_test, {'brown': 0.16666666666666666, 'lazy': 0.16666666666666666,
-                             'jumps': 0.16666666666666666, 'fox': 0.16666666666666666,
-                             'dog': 0.16666666666666666, 'quick': 0.16666666666666666},
-                    'incorrect result for tf on sample text')
-tf_test2 = tf(tokenize('one_ one_ two!'))
-Test.assertEquals(tf_test2, {'one_': 0.6666666666666666, 'two': 0.3333333333333333},
-                    'incorrect result for tf test')
-
-
-
 
 def idfs(corpus):
     """ Compute IDF
@@ -231,27 +160,6 @@ def idfs(corpus):
     tokenSumPairTuple = tokenCountPairTuple.reduceByKey(lambda a, b: a + b)
     return (tokenSumPairTuple.map(lambda (tok, num): (tok, N / num )))
 
-idfsSmall = idfs(googleRecToToken)
-uniqueTokenCount = idfsSmall.count()
-
-
-
-
-smallIDFTokens = idfsSmall.takeOrdered(11, lambda s: s[1])
-print smallIDFTokens
-
-
-
-
-import matplotlib.pyplot as plt
-
-small_idf_values = idfsSmall.map(lambda s: s[1]).collect()
-fig = plt.figure(figsize=(8,3))
-plt.hist(small_idf_values, 50, log=True)
-pass
-
-
-
 
 def tfidf(tokens, idfs):
     """ Compute TF-IDF
@@ -264,15 +172,5 @@ def tfidf(tokens, idfs):
     tfs = tf(tokens)
     tfIdfDict = {key: idfs[key] * tfs[key] for key in tokens}
     return tfIdfDict
-
-recb000hkgj8k = googleRecToToken.collect()[0][1]
-idfsSmallWeights = idfsSmall.collectAsMap()
-rec_b000hkgj8k_weights = tfidf(recb000hkgj8k, idfsSmallWeights)
-
-print 'Amazon record "b000hkgj8k" has tokens and weights:n%s' % rec_b000hkgj8k_weights
-
-
-
-
 
 
