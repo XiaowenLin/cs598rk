@@ -52,4 +52,4 @@ items_np = items_np.map(lambda (asin, pairs, reviews, d_prod, categories):
 # 3. output
 import pandas as pd
 df = pd.DataFrame(items_np.collect())
-df.to_csv('data/computers_kw.csv')
+df.to_csv('data/processed/computers_kw.csv')
