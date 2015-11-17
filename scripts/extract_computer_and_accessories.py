@@ -22,10 +22,10 @@ rev_agg_texts.cache()
 
 prods = get_rdd('data', 'meta_electronics.json', num_part)
 categ = prods.map( lambda x: (x.get('asin'), x.get('categories')) )
-categ = categ.flapMapValues(lambda x: x)
-computers = categ_.filter( lambda (asin, cats): 'Computers & Accessories' in cats )
-prods_ = prods_.join(computers)
-prods.cache()
+categ = categ.flatMapValues(lambda x: x)
+computers = categ.filter( lambda (asin, cats): 'Computers & Accessories' in cats )
+prods_ = prods.join(computers)
+prods_.cache()
 
 # (asin, ([review], (d_prod, [category])) )
 items = rev_agg_texts.join(prods_)
@@ -39,10 +39,14 @@ items_wk = items.map( lambda (asin, reviews, d_prod, categories): (asin, rake.ru
 # 2. NP: noun phrasee among these keywords
 import nltk
 from scripts.np_extractor import *
-items_wk.cache()
+items_wk.cache
+
+
 items_np = items_wk.map(lambda (asin, pairs, reviews, d_prod, categories): 
                                (asin, [(NPExtractor(string).extract(), score) for (string, score) in pairs], reviews, d_prod, categories)
                        )
+
+
 items_np = items_np.map(lambda (asin, pairs, reviews, d_prod, categories):
                                (asin, [(toks, scr) for (toks, scr) in pairs if len(toks) > 0], reviews, d_prod, categories)
                        )
