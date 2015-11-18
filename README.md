@@ -30,6 +30,6 @@ Scaffidi, Christopher, et al. "Red Opal: product-feature scoring from reviews."P
 
 Decker, Reinhold, and Michael Trusov. "Estimating aggregate consumer preferences from online product reviews." International Journal of Research in Marketing 27.4 (2010): 293-307.  
 
-A Python implementation of the Rapid Automatic Keyword Extraction (RAKE) algorithm as described in: Rose, S., Engel, D., Cramer, N., & Cowley, W. (2010). Automatic Keyword Extraction from Individual Documents. In M. W. Berry & J. Kogan (Eds.), Text Mining: Theory and Applications: John Wiley & Sons.
+Rose, S., Engel, D., Cramer, N., & Cowley, W. (2010). Automatic Keyword Extraction from Individual Documents. In M. W. Berry & J. Kogan (Eds.), Text Mining: Theory and Applications: John Wiley & Sons.
 
 
