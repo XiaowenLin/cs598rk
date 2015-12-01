@@ -1,20 +1,30 @@
-<html>
+{% extends "product/vizbase.html" %}
+{% block content %}
     <head>
         <title>D3jango project</title>
     </head>
     <body>
-        <div>
-            <h1><a href="">List of searched products</a></h1>
-        </div>
+    <br>
+      <div class="search">
+        <h2 class="white">Search for a category</h2> 
+        <form action="/cellphone" >
+        <input type="blank" name="product" placeholder="Type and press enter">
+        </form>
+      </div>
+      <div class= "row" style='margin:5% 0'>
 
         {% for product in products %}
-        <div>
+        <div class="col-sm-4 product">
 
             <h2><a href={{ product.product_name }}>{{ product.product_name }}</a></h2>
             <p>created: {{ product.created_date }}</p>
             <p>ASIN: {{ product.ASIN }}</p>
+            <br>
         </div>
 
         {% endfor %}
+
+    </div>
     </body>
-</html>
+
+{% endblock  %}
