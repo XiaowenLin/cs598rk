@@ -14,14 +14,23 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Post',
+            name='Category',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('p_name', models.CharField(max_length=200)),
-                ('ASIN', models.CharField(max_length=20)),
                 ('created_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('published_date', models.DateTimeField(null=True, blank=True)),
+                ('category_name', models.CharField(max_length=200)),
                 ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Item',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('product_name', models.CharField(max_length=200)),
+                ('ASIN', models.CharField(max_length=20)),
+                ('seller', models.CharField(max_length=40)),
+                ('category', models.ForeignKey(default=1, to='reviewapp.Category')),
             ],
         ),
     ]

@@ -1,7 +1,7 @@
-{% extends "product/vizbase.html" %}
+{% extends "reviewapp/vizbase.html" %}
 {% block content %}
     <head>
-        <title>D3jango project</title>
+        <title>Categories</title>
     </head>
     <body>
     <br>
@@ -13,12 +13,11 @@
       </div>
       <div class= "row" style='margin:5% 0'>
 
-        {% for product in products %}
+        {% for category in categories %}
         <div class="col-sm-4 product">
 
-            <h2><a href={{ product.product_name }}>{{ product.product_name }}</a></h2>
-            <p>created: {{ product.created_date }}</p>
-            <p>ASIN: {{ product.ASIN }}</p>
+            <h2><a href={{ category.id }}>{{ category.category_name }}</a></h2>
+            <p>created_date: {{ category.created_date }}</p>
             <br>
         </div>
 

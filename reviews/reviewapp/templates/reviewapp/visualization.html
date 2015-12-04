@@ -1,10 +1,11 @@
-{% extends "product/vizbase.html" %}
+{% extends "reviewapp/vizbase.html" %}
 {% block content %}
 <body>
   <!-- START TOPBAR -->
   <div class='page-topbar '>
+      <a href="/">
       <div class='logo-area'>
-      </div>
+      </div></a>
       <div class='quick-area'>
           <div class='pull-right'>
               <ul class="info-menu right-links list-inline list-unstyled">
@@ -40,12 +41,6 @@
                           </li>
                       </ul>
                   </li>
-                  <li class="chat-toggle-wrapper">
-                      <a href="#" data-toggle="chatbar" class="toggle_chat">
-                          <i class="fa fa-comments"></i>
-                          <span class="badge badge-warning">9</span>
-                      </a>
-                  </li>
               </ul>     
           </div>    
       </div>
@@ -58,7 +53,7 @@
   <div class="col-md-8 col-sm-12 col-xs-12">
     <div class="visualization db_box">
 
-    <h4>Features: {{ product }} </h4>
+    <h4>Features for {{ item.product_name }};  Rating: {{ item.rating}} </h4>
     </div>
   </div>
 
@@ -133,7 +128,7 @@ function updateCom(comments, sign){
 }
 
 //data = {{ data }}
-d3.json( "../static/data/{{ product }}.json",  function(error, data) {
+d3.json( "../static/data/{{ item_ASIN }}.json",  function(error, data) {
 
   x.domain([-1 * d3.max(data, function(d) { return d.neg; }), d3.max(data, function(d) { return d.pos; })]).nice();
   y.domain(data.map(function(d) { return d.feature; }));
