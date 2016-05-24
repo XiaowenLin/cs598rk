@@ -3,7 +3,11 @@ import json
 
 
 # get review texts aggregated by asin id
+<<<<<<< HEAD
 def get_rdd(base, input, num_part, sc):
+=======
+def get_rdd(base, input, num_part):
+>>>>>>> 70d0f4a66bc6a75fddaee1f62dd3c02ba4b6b19a
                 base_dir = os.path.join(base)
                 input_path = os.path.join(input)
                 file_name = os.path.join(base_dir, input_path)
@@ -15,7 +19,11 @@ def get_rdd(base, input, num_part, sc):
 
 
 num_part = 16
+<<<<<<< HEAD
 revs = get_rdd('data', 'reviews_electronics.json', num_part, sc)
+=======
+revs = get_rdd('data', 'reviews_electronics.json', num_part)
+>>>>>>> 70d0f4a66bc6a75fddaee1f62dd3c02ba4b6b19a
 rev_texts = revs.map(lambda x: (x['asin'], x['reviewText']))
 rev_agg_texts = rev_texts.map(lambda (asin, text): (asin, [text])).reduceByKey(lambda x, y: x + y)
 rev_agg_texts.cache()
