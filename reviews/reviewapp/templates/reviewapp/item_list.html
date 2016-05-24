@@ -1,0 +1,25 @@
+{% extends "reviewapp/vizbase.html" %}
+{% block content %}
+    <head>
+        <title>D3jango project</title>
+    </head>
+    <body>
+    <br>
+      <div class= "row" style='margin:5% 0'>
+
+        {% for product in items %}
+        <div class="col-sm-3 product">
+
+            <h2><a href={{product.ASIN }}>{{ product.product_name }}</a></h2>
+            <p>seller: {{ product.seller }}</p>
+            <p>ASIN: {{ product.ASIN }}
+            <p>rating: {{ product.rating }}</p>    
+            <br>
+        </div>
+
+        {% endfor %}
+
+    </div>
+    </body>
+
+{% endblock  %}
