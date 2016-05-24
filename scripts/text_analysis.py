@@ -3,6 +3,8 @@
 # coding: utf-8
 
 import re
+
+
 DATAFILE_PATTERN = '^(.+),"(.+)",(.*),(.*),(.*)'
 
 def get_rdd(base, input, num_part):
@@ -46,7 +48,6 @@ def parseDatafileLine(datafileLine):
 
 import sys
 import os
-from test_helper import Test
 
 def parseData(filename):
     """ Parse a data file
@@ -143,7 +144,6 @@ def tf(tokens):
     addon = 1.0 / len(tokens)
     for tok in tokens:
         res[tok] = res.setdefault(tok, 0) + addon
-    res
     return res
 
 

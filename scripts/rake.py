@@ -137,7 +137,6 @@ class Rake(object):
         return sorted_keywords
 
 
-
 if __name__ == "__main__":
 
     text = "Compatibility of systems of linear constraints over the set of natural numbers. Criteria of compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of construction of minimal generating sets of solutions for all types of systems are given. These criteria and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in solving all the considered types of systems and systems of mixed types."
@@ -171,3 +170,37 @@ if __name__ == "__main__":
     rake = Rake("../data/SmartStoplist.txt")
     keywords = rake.run(text)
     print keywords
+
+if __name__ == 'main':
+    if test:
+        text = "Compatibility of systems of linear constraints over the set of natural numbers. Criteria of compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of construction of minimal generating sets of solutions for all types of systems are given. These criteria and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in solving all the considered types of systems and systems of mixed types."
+    
+        text = "Corey Barker does a great job of explaining Blend Modes in this DVD. All of the Kelby training videos are great but pricey to buy individually. If you really want bang for your buck just subscribe to Kelby Training online."
+        text = "This remote, for whatever reason, was chosen by Time Warner to replace their previous silver remote, the Time Warner Synergy V RC-U62CP-1.12S.  The actual function of this CLIKR-5 is OK, but the ergonomic design sets back remotes by 20 years.  The buttons are all the same, there's no separation of the number buttons, the volume and channel buttons are the same shape as the other buttons on the remote, and it all adds up to a crappy user experience.  Why would TWC accept this as a replacement?  This remote is virtually impossible to pick up and use without staring at it to make sure where your fingers are.  Heck, you have to feel around just to figure out if you've grabbed it by the top or bottom, since there's no articulation in the body of the thing to tell you which end is up.  Horrible, just horrible design.  I'm skipping this and paying double for a refurbished Synergy V."
+        text = "It is an exact duplicate of my Time warner remote.I bought it so my wife could control the TV from her chair and not ask me to do it every time.It works great.I would reccomend it to anyone."
+        # Split text into sentences
+        sentenceList = split_sentences(text)
+        #stoppath = "FoxStoplist.txt" #Fox stoplist contains "numbers", so it will not find "natural numbers" like in Table 1.1
+        stoppath = "data/SmartStoplist.txt"  #SMART stoplist misses some of the lower-scoring keywords in Figure 1.5, which means that the top 1/3 cuts off one of the 4.0 score words in Table 1.1
+        stopwordpattern = build_stop_word_regex(stoppath)
+    
+        # generate candidate keywords
+        phraseList = generate_candidate_keywords(sentenceList, stopwordpattern)
+    
+        # calculate individual word scores
+        wordscores = calculate_word_scores(phraseList)
+    
+        # generate candidate keyword scores
+        keywordcandidates = generate_candidate_keyword_scores(phraseList, wordscores)
+        if debug: print keywordcandidates
+    
+        sortedKeywords = sorted(keywordcandidates.iteritems(), key=operator.itemgetter(1), reverse=True)
+        if debug: print sortedKeywords
+    
+        totalKeywords = len(sortedKeywords)
+        if debug: print totalKeywords
+        print sortedKeywords[0:(totalKeywords / 3)]
+    
+        rake = Rake("data/SmartStoplist.txt")
+        keywords = rake.run(text)
+        print keywords

@@ -3,3 +3,11 @@ include/
 lib/
 data/
 local/
+scripts/*1612
+metastore_db/*
+*.pyc
+*.dat
+*.txt
+*.log
+scripts/.ipynb_checkpoints/
+

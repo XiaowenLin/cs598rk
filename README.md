@@ -11,7 +11,7 @@ Use the method in “Opinion observer” [2] to get the feature space of product
 
 More details:  
 * Perform POS tagging and remove digits  
-* Replace actual feature words with [feature] reviews agreed on  
+* Replace actual feature words with [feature] reviews agreed on [4]  
 * Generate 3-grams from reviews, which contains the [feature]  
 * Distinguish duplicate tags  
 * Word stemming  
@@ -29,5 +29,7 @@ Liu, Bing, Minqing Hu, and Junsheng Cheng. "Opinion observer: analyzing and comp
 Scaffidi, Christopher, et al. "Red Opal: product-feature scoring from reviews."Proceedings of the 8th ACM conference on Electronic commerce. ACM, 2007.  
 
 Decker, Reinhold, and Michael Trusov. "Estimating aggregate consumer preferences from online product reviews." International Journal of Research in Marketing 27.4 (2010): 293-307.  
+
+Rose, S., Engel, D., Cramer, N., & Cowley, W. (2010). Automatic Keyword Extraction from Individual Documents. In M. W. Berry & J. Kogan (Eds.), Text Mining: Theory and Applications: John Wiley & Sons.
 
 

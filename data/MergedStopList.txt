@@ -56,6 +56,7 @@ at
 available
 away
 awfully
+awesome
 b
 back
 backed
@@ -458,6 +459,7 @@ presented
 presenting
 presents
 presumably
+pretty
 probably
 problem
 problems
